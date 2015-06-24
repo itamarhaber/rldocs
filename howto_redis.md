@@ -235,9 +235,10 @@ The output of the above code should be:
 # Using Redis with Java #
 In order to use Redis with Java you will need a Java Redis client. In following sections, we will demonstrate the use of [lettuce] (https://github.com/mp911de/lettuce/) and [Jedis](https://github.com/xetorthio/jedis). Additional Java clients for Redis can be found under the [Java section](http://redis.io/clients#Java) of the Redis Clients page.
 
-## installing lettuce ##
+## Lettuce - a scalable thread-safe Redis client providing both synchronous and asynchronous connections ##
+### Installing lettuce ###
  
-lettuce' installation instructions are given in the "How do I Use it?" section of its README file. Use lettuce by declaring the following Maven dependency:
+Lettuce's installation instructions are given in the ["Binaries/Download"](https://github.com/mp911de/lettuce#binariesdownload) section of its README file. Use lettuce by declaring the following Maven dependency:
  
     <dependency>
         <groupId>biz.paluch.redis</groupId>
@@ -247,7 +248,7 @@ lettuce' installation instructions are given in the "How do I Use it?" section o
  
 You can also download the latest lettuce release from the GitHub repository: https://github.com/mp911de/lettuce/wiki/Download
  
-## opening a connection to Redis using lettuce ##
+### Opening a Connection to Redis using lettuce ###
  
 The following code creates a connection to Redis using lettuce:
  
@@ -256,8 +257,7 @@ The following code creates a connection to Redis using lettuce:
     public class ConnectToRedis {
  
         public static void main(String[] args) {
-            // Syntax: redis://[password@]host[:port][/databaseNumber]
-            RedisClient redisClient = new RedisClient(RedisURI.create("redis://password@localhost:6379/0"));
+            RedisClient redisClient = new RedisClient(RedisURI.create("redis://password@host:port"));
             RedisConnection<String, String> connection = redisClient.connect();
  
             System.out.println("Connected to Redis");
@@ -270,23 +270,18 @@ The following code creates a connection to Redis using lettuce:
 To adapt this example to your code, make sure that you replace the following values with those of your database:
  
  - In line 7, the URI contains the password. The argument should be your database's password. Remove `password@` to connect without authentication
+ - In line 7, the URI contains the host. The argument should be your database's host.
  - In line 7, the URI contains the port. The argument should be your database's port.
- - In line 7, the URI contains the database number. The argument should be your database number for the initial connection.
-
- hostname, port and the database number. 
-     Change these values according to your hostname, port and database number.
-     If you can remove the password, port number and database number to use default values (no authentication, port 6379 and database number 0)
  
 lettuce is thread-safe, and the same lettuce connection can be used from different threads. Using multiple connections is also possible.
  
 If you're using Spring, use the following plain Spring XML to create a lettuce instance:
  
     <bean id="RedisClient" class="com.lambdaworks.redis.support.RedisClientFactoryBean">
-        <property name="uri" value="redis://localhost:6379"/>
+        <property name="uri" value="redis://host:port"/>
     </bean>
  
- 
-and use it then within your managed beans
+ and use it then within your managed beans as follows:
  
     import com.lambdaworks.redis.*;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -315,7 +310,7 @@ Once your standalone-application exits, remember to shutdown lettuce by using th
  
 If you are using Spring and CDI, the frameworks will manage the resources for you and you do not have to close the client using the shutdown method.
  
-## using ssl and lettuce ##
+### Using SSL and lettuce ###
  
 For an added security measure, you can secure the connection using SSL connections. lettuce supports SSL connections natively.
  
@@ -324,8 +319,7 @@ For an added security measure, you can secure the connection using SSL connectio
     public class ConnectToRedisSSL {
  
         public static void main(String[] args) {
-            // Syntax: rediss://[password@]host[:port][/databaseNumber]
-            RedisClient redisClient = new RedisClient(RedisURI.create("rediss://password@localhost:6443/0"));
+            RedisClient redisClient = new RedisClient(RedisURI.create("rediss://password@host:port"));
             RedisConnection<String, String> connection = redisClient.connect();
             System.out.println("Connected to Redis using SSL");
  
@@ -334,7 +328,7 @@ For an added security measure, you can secure the connection using SSL connectio
         }
     }
  
-## reading and writing data with lettuce ##
+### Reading and Writing Data with lettuce ###
  
 Once connected to Redis, you can start reading and writing data. The following code snippet writes the value bar to the Redis key foo, reads it back, and prints it:
  
@@ -350,50 +344,9 @@ The output of the above code should be:
     $ java ReadWriteExample
     Connected to Redis
     bar
- 
- 
-## connecting to Redis using Redis Sentinel ##
- 
-Redis Sentinel is an HA-Registry to monitor your Redis instances. You connect to one or more Redis Sentinel instances to obtain the connection address of the current Redis master. You need to specify the `redis-sentinel` scheme and one or more Redis Sentinel addresses within the connection URI to connect to Redis using Redis Sentinel:
- 
-    import com.lambdaworks.redis.*;
- 
-    public class ConnectToRedisUsingRedisSentinel {
- 
-        public static void main(String[] args) {
-            // Syntax: redis-sentinel://[password@]host[:port][,host2[:port2]][/databaseNumber]#sentinelMasterId
-            RedisClient redisClient = new RedisClient(RedisURI.create("redis-sentinel://localhost:26379,localhost:26380/0#mymaster"));
-            RedisConnection<String, String> connection = redisClient.connect();
- 
-            System.out.println("Connected to Redis using Redis Sentinel");
- 
-            connection.close();
-            redisClient.shutdown();
-        }
-    }
- 
-## connecting to a Redis Cluster ##
- 
-You can connect to a Redis Cluster using lettuce's RedisClusterClient. The client has a view on the cluster topology and routes calls for keys on particular slot-hashes to the appropriate node transparently. Once you are connected use the client as you would for standalone operations. Keep in mind, that multi-key operations like `zunionstore` have to operate on one slot-hash.
- 
-    import com.lambdaworks.redis.*;
-    import com.lambdaworks.redis.cluster.*;
- 
-    public class ConnectToRedisCluster {
- 
-        public static void main(String[] args) {
-            // Syntax: redis-cluster://[password@]host[:port][/databaseNumber]
-            RedisClusterClient redisClient = new RedisClusterClient(RedisURI.create("redis://password@localhost:7379"));
-            RedisAdvancedClusterConnection<String, String> connection = redisClient.connectCluster();
- 
-            System.out.println("Connected to Redis");
- 
-            connection.close();
-            redisClient.shutdown();
-        }
-    }
 
-## Installing Jedis##
+## Jedis - a blazingly small and sane Redis Java client ##
+### Installing Jedis ###
 Jedis' installation instructions are given in the ["How do I Use it?" section](https://github.com/xetorthio/jedis/#how-do-i-use-it) of its README file. Use Jedis by declaring the following Maven dependency:
 
     <dependency>
@@ -409,7 +362,7 @@ You can also download the latest [Jedis release](https://github.com/xetorthio/je
 	$ cd jedis
 	~/jedis$ make package
 
-## Opening a Connection to Redis Using Jedis ##
+### Opening a Connection to Redis Using Jedis ###
 The following code creates a connection to Redis using Jedis:
 
 	import redis.clients.jedis.Jedis;
@@ -429,7 +382,7 @@ To adapt this example to your code, make sure that you replace the following val
  - In line 6, the second argument to `Jedis` should be your database's port
  - In line 7, the argument to `auth` should be your database's password
 
-## Connection Pooling with Jedis ##
+### Connection Pooling with Jedis ###
 Jedis isn't thread-safe, and the same Jedis instance shouldn't be used from different threads. To overcome the overhead of multiple Jedis instances and connection maintenance, use `JedisPool`. To use JedisPool you'll have to have `Apache Commons Pool 2.3` available - download it  [here]( http://commons.apache.org/proper/commons-pool/download_pool.cgi) or add the following Maven dependency:
 
 	<dependency>
@@ -456,7 +409,7 @@ If you're using Spring, use the following Plain Spring XML to create JedisPool:
 	    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig" >
 	</bean>
 
-JedisPool is thread-safe and can be stored in a static variable and shared among threads. The following code gets a Jedis instance from the JedisPool:
+`JedisPool` is thread-safe and can be stored in a static variable and shared among threads. The following code gets a Jedis instance from the `JedisPool`:
 
 	Jedis redis = null;
 	    try
@@ -486,10 +439,10 @@ Once your application exits, remember to dispose of the `JedisPool` by using the
 
     pool.destroy();
 
-## Using SSL and Jedis ##
+### Using SSL and Jedis ###
 Jedis does not support SSL connections natively. For an added security measure, you can secure the connection using [stunnel](https://redislabs.com/blog/using-stunnel-to-secure-redis) or this [Jedis fork](https://github.com/RedisLabs/jedis) that has been added with SSL support.
 
-## Reading and Writing Data with Jedis ##
+### Reading and Writing Data with Jedis ###
 Once connected to Redis, you can start reading and writing data. The following code snippet writes the value `bar` to the Redis key `foo`, reads it back, and prints it:
 
     // open a connection to Redis
