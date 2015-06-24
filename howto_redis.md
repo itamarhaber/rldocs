@@ -235,7 +235,9 @@ The output of the above code should be:
 # Using Redis with Java #
 In order to use Redis with Java you will need a Java Redis client. In following sections, we will demonstrate the use of [lettuce] (https://github.com/mp911de/lettuce/) and [Jedis](https://github.com/xetorthio/jedis). Additional Java clients for Redis can be found under the [Java section](http://redis.io/clients#Java) of the Redis Clients page.
 
-## Lettuce - a scalable thread-safe Redis client providing both synchronous and asynchronous connections ##
+## Lettuce ##
+Lettuce is a scalable thread-safe Redis client providing both synchronous and asynchronous connections.
+
 ### Installing lettuce ###
  
 Lettuce's installation instructions are given in the ["Binaries/Download"](https://github.com/mp911de/lettuce#binariesdownload) section of its README file. Use lettuce by declaring the following Maven dependency:
@@ -345,7 +347,9 @@ The output of the above code should be:
     Connected to Redis
     bar
 
-## Jedis - a blazingly small and sane Redis Java client ##
+## Jedis ##
+Jedis is a blazingly small and sane Redis Java client.
+
 ### Installing Jedis ###
 Jedis' installation instructions are given in the ["How do I Use it?" section](https://github.com/xetorthio/jedis/#how-do-i-use-it) of its README file. Use Jedis by declaring the following Maven dependency:
 
